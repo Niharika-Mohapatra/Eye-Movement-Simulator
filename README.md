@@ -1,4 +1,4 @@
-# Eye-Movement-Simulation
+# Eye Movement Simulation
 
 This visualization demonstrates two major types of human eye movements:
 
