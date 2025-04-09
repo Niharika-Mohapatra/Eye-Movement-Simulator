@@ -8,6 +8,10 @@ This visualization demonstrates two major types of human eye movements:
 
 Built with p5.js. 
 
+## View Online:
+You can view the simulation here:
+https://niharika-mohapatra.github.io/Eye-Movement-Simulator/
+
 ## Why do eye movements matter?
 Our eyes are constantly moving even when we think we're staring at something still. These movements are crucial for gathering visual information and for how we perceive the world.
 
@@ -80,10 +84,6 @@ Tech Stack:
 * p5.js
 * HTML5 Canvas
 * Javascript
-
-## View Online:
-You can view the simulation here:
-https://niharika-mohapatra.github.io/Eye-Movement-Simulator/
 
 ## Background:
 This project was created to visualize oculomotor behavior as part of a cognitive science project. The models are simplified but grounded in the neurophysiology of eye movement.
