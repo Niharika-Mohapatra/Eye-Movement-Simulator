@@ -45,17 +45,13 @@ function draw() {
   }
   prevPupilOffset = pupilOffset.copy();
 
-
-
   let vel = p5.Vector.sub(targetPos, prevTargetPos);
 
-  
   velocityProfile.push(vel.mag());
   if (velocityProfile.length > velocityHistoryLength) {
     velocityProfile.shift();
   }
 
-  
   fill(150, 150, 150, 120);
   noStroke();
   for (let i = 0; i < fixationPoints.length - 1; i++) {
@@ -63,12 +59,10 @@ function draw() {
     ellipse(pt.x, pt.y, 8, 8);
   }
 
- 
   fill(255, 0, 0);
   noStroke();
   ellipse(targetPos.x, targetPos.y, 14, 14);
 
-  
   let midEye = p5.Vector.add(eyeCentres[0], eyeCentres[1]).div(2);
   let toTarget = p5.Vector.sub(targetPos, midEye);
   let distanceToTarget = toTarget.mag();
@@ -77,7 +71,6 @@ function draw() {
     pupilOffset.add(p5.Vector.mult(vel, pursuitGain));
   }
 
-  
   pupilOffset.x = constrain(pupilOffset.x, -30, 30);
   pupilOffset.y = constrain(pupilOffset.y, -20, 20);
 
@@ -139,7 +132,6 @@ function drawVelocityGraph() {
     vertex(x, y);
   }
   endShape();
-
  
   noFill();
   stroke(0, 150, 255);
