@@ -1,5 +1,8 @@
 body {
     background-color: black;
     color: white;
-    font-family: Monaco, Monospace;
+}
+
+p {
+    font-family: "Monaco", "Monospace";
 }
