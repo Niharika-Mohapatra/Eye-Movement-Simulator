@@ -4,6 +4,17 @@ body {
 }
 
 p {
-    font-size: 10;
+    font-size: 20;
+    font-family: "Monaco", "Monospace";
+}
+
+h1 {
+    font-size: 30;
+    font-family: "Monaco", "Monospace";
+}
+
+button {
+    padding: 15px 25px;
+    font-size: 20px;
     font-family: "Monaco", "Monospace";
 }
