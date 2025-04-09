@@ -21,6 +21,22 @@ Understanding these movements helps in fields like vision science, cognitive neu
 
 ### Saccadic model:
 
+This simulation models rapid eye jumps (saccades) as the eyes shift focus from one point to another.
+
+The red dot represents a shifting point of interest, jumping randomly after short fixations.
+
+The pupils move toward the target using a biologically inspired minimum jerk profile—smooth acceleration and deceleration mimicking natural saccadic motion.
+
+### What does the graph reveal?
+Green Line (Pupil Velocity):
+Sharp, burst-like peaks that represent the rapid flicks of saccadic eye movement. Each spike reflects a saccade—quick, ballistic movements with high peak velocity and a fixed duration-amplitude relationship.
+
+Longer jumps require faster, longer saccades
+
+Shorter jumps produce quicker, briefer flicks
+
+Unlike smooth pursuit, the eyes do not track continuous motion—they jump between fixations, emphasizing speed and efficiency over continuous accuracy.
+
 ### Smooth Pursuit model:
 This simulation models basic eye behavior using vector math and physics-inspired logic. 
 
@@ -40,6 +56,8 @@ These approximations allow users to intuitively understand how our visual system
 * Blue Line (Pupil Velocity): Step-like changes in velocity that occur only when the system deems pursuit necessary.
 
 This stepped profile captures the all-or-nothing nature of biological smooth pursuit. The eyes don’t constantly follow, they wait until the target moves too far or fast, then "snap" to catch up.
+
+![Velocity Profiles of Target and Pupil (green and blue respectively](Smooth_pursuit_velocity_profile.png)
 
 ## Features:
 Visual simulation of eye tracking behavior.
