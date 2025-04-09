@@ -23,7 +23,7 @@ Understanding these movements helps in fields like vision science, cognitive neu
 
 This simulation models rapid eye jumps (saccades) as the eyes shift focus from one point to another.
 
-The red dot represents a shifting point of interest, jumping randomly after short fixations.
+The red dot represents a shifting point of interest, jumping randomly after short fixations - which are represented by grey dots on the screen.
 
 The pupils move toward the target using a biologically inspired minimum jerk profile—smooth acceleration and deceleration mimicking natural saccadic motion.
 
