@@ -35,7 +35,7 @@ function draw() {
       let jerkAmt = minJerk(progress);
       pupilOffset = p5.Vector.sub(targetPos, prevTargetPos).mult(jerkAmt);
 
-    
+      // Approximate velocity
       let deltaProgress = minJerk(progress + 0.01) - jerkAmt;
       let velocity = p5.Vector.sub(targetPos, prevTargetPos).mult(deltaProgress).mag();
       velocityProfile.push(velocity);
@@ -62,17 +62,17 @@ function draw() {
     }
   }
 
-  
+  // Draw current target (red dot)
   noStroke();
   fill(255, 0, 0);
   ellipse(targetPos.x, targetPos.y, 10, 10);
 
-
+  // Draw eyes
   for (let centre of eyeCentres) {
     drawEye(centre.x, centre.y, p5.Vector.add(centre, pupilOffset));
   }
 
- 
+  // Draw fixation points
   noStroke();
   fill(150, 150, 150, 120);
   for (let pt of fixationPoints) {
@@ -117,13 +117,14 @@ function drawVelocityGraph() {
   translate(20, height - 120);
 
   noFill();
-  stroke(0, 255, 0);
+  stroke(0, 150, 255);
   beginShape();
   for (let i = 0; i < velocityProfile.length; i++) {
     vertex(i, -velocityProfile[i] * 10);
   }
   endShape();
 
+  // Axis line & label
   stroke(255);
   line(0, 0, 200, 0);
   noStroke();
@@ -156,6 +157,7 @@ function drawMainSequenceGraph() {
   text("Duration (frames)", 0, 0);
   pop();
 
+  // Grid
   stroke(100);
   textSize(10);
   for (let x = 0; x <= graphW; x += 50) {
@@ -167,8 +169,9 @@ function drawMainSequenceGraph() {
     text((graphH - y), -25, y + 4);
   }
 
+  // Plot saccades
   noFill();
-  stroke(0, 255, 255);
+  stroke(0, 255, 0);
   let maxAmp = 0, maxDur = 0;
   for (let i = 0; i < mainSequenceData.length; i++) {
     maxAmp = max(maxAmp, mainSequenceData[i].amplitude);

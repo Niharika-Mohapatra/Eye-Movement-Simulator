@@ -7,6 +7,8 @@ let deadZoneRadius = 80;
 
 let fixationPoints = [];
 let velocityProfile = [];
+let pupilVelocityProfile = [];
+let prevPupilOffset;
 const velocityHistoryLength = 200;
 
 function setup() {
@@ -16,6 +18,7 @@ function setup() {
   eyeCentres.push(createVector(width / 2 + offset, height / 2)); 
 
   pupilOffset = createVector(0, 0);
+  prevPupilOffset = pupilOffset.copy();
   targetPos = createVector(0, 0);
   prevTargetPos = createVector(0, 0);
 }
@@ -34,6 +37,14 @@ function draw() {
   if (fixationPoints.length > 10) {
     fixationPoints.shift();
   }
+  
+  let pupilVel = p5.Vector.sub(pupilOffset, prevPupilOffset);
+  pupilVelocityProfile.push(pupilVel.mag());
+  if (pupilVelocityProfile.length > velocityHistoryLength) {
+    pupilVelocityProfile.shift();
+  }
+  prevPupilOffset = pupilOffset.copy();
+
 
 
   let vel = p5.Vector.sub(targetPos, prevTargetPos);
@@ -90,7 +101,6 @@ function drawEye(x, y, offset) {
   pupilOffset.x = constrain(pupilOffset.x, -maxOffsetX, maxOffsetX);
   pupilOffset.y = constrain(pupilOffset.y, -maxOffsetY, maxOffsetY);
 
-
   fill(255);
   stroke(0);
   strokeWeight(2);
@@ -125,15 +135,25 @@ function drawVelocityGraph() {
   beginShape();
   for (let i = 0; i < velocityProfile.length; i++) {
     let x = map(i, 0, velocityHistoryLength, 0, graphW);
-    let y = map(velocityProfile[i], 0, 20, graphH, 0); 
+    let y = map(velocityProfile[i], 0, 20, graphH, 0);
     vertex(x, y);
   }
   endShape();
 
- 
+  // Pupil velocity in blue
+  noFill();
+  stroke(0, 150, 255);
+  beginShape();
+  for (let i = 0; i < pupilVelocityProfile.length; i++) {
+    let x = map(i, 0, velocityHistoryLength, 0, graphW);
+    let y = map(pupilVelocityProfile[i], 0, 20, graphH, 0);
+    vertex(x, y);
+  }
+  endShape();
+
   noStroke();
-  fill(255);
-  textSize(12);
-  text("Velocity Profile", 10, -10);
-  pop();
+  fill(0, 255, 0);
+  text("Target", 10, graphH + 15);
+  fill(0, 150, 255);
+  text("Pupil", 70, graphH + 15);
 }
