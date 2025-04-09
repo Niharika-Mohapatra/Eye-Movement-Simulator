@@ -84,12 +84,6 @@ function drawEye(x, y, offset) {
   let irisRadius = 40;
   let pupilRadius = 20;
 
-  let irisLimitX = (eyeWidth / 2) - (irisRadius / 2);
-  let irisLimitY = (eyeHeight / 2) - (irisRadius / 2);
-
-  let dx = constrain(gazePos.x - x, -irisLimitX, irisLimitX);
-  let dy = constrain(gazePos.y - y, -irisLimitY, irisLimitY);
-
   fill(255);
   stroke(0);
   strokeWeight(2);
