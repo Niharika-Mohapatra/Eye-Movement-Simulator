@@ -140,7 +140,7 @@ function drawVelocityGraph() {
   }
   endShape();
 
-  // Pupil velocity in blue
+ 
   noFill();
   stroke(0, 150, 255);
   beginShape();

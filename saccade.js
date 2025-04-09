@@ -62,17 +62,17 @@ function draw() {
     }
   }
 
-  // Draw current target (red dot)
+  // Target (red dot)
   noStroke();
   fill(255, 0, 0);
   ellipse(targetPos.x, targetPos.y, 10, 10);
 
-  // Draw eyes
+  // Eyes
   for (let centre of eyeCentres) {
     drawEye(centre.x, centre.y, p5.Vector.add(centre, pupilOffset));
   }
 
-  // Draw fixation points
+  // Fixation points
   noStroke();
   fill(150, 150, 150, 120);
   for (let pt of fixationPoints) {
