@@ -27,7 +27,7 @@ Understanding these movements helps in fields like vision science, cognitive neu
 
 This simulation models rapid eye jumps (saccades) as the eyes shift focus from one point to another.
 
-The red dot represents a shifting point of interest, jumping randomly after short fixations - which are represented by grey dots on the screen.
+The red dot represents a shifting point of interest, jumping randomly after short fixations, which are represented by grey dots on the screen.
 
 The pupils move toward the target using a biologically inspired minimum jerk profile—smooth acceleration and deceleration mimicking natural saccadic motion.
 
@@ -39,7 +39,7 @@ Longer jumps require faster, longer saccades
 
 Shorter jumps produce quicker, briefer flicks
 
-Unlike smooth pursuit, the eyes do not track continuous motion—they jump between fixations, emphasizing speed and efficiency over continuous accuracy.
+Unlike smooth pursuit, the eyes do not track continuous motion. They jump between fixations, emphasizing speed and efficiency over continuous accuracy.
 
 ![Velocity Profile of Pupil](images/Saccade_pupil_velocity.png)
 
