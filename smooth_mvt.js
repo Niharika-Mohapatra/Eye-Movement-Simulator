@@ -1,21 +1,22 @@
+// Global variables
 let eyeCentres = [];
 let pupilOffset;
 let targetPos, prevTargetPos;
 let t = 0;
 let pursuitGain = 0.6;
 let deadZoneRadius = 80;
-
 let fixationPoints = [];
 let velocityProfile = [];
 let pupilVelocityProfile = [];
 let prevPupilOffset;
 const velocityHistoryLength = 200;
 
+// Set up canvas
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  let offset = 60; 
-  eyeCentres.push(createVector(width / 2 - offset, height / 2));
-  eyeCentres.push(createVector(width / 2 + offset, height / 2)); 
+  let offset = 60; // Horizontal offset between eyes
+  eyeCentres.push(createVector(width / 2 - offset, height / 2)); // Left eye centre
+  eyeCentres.push(createVector(width / 2 + offset, height / 2)); // Right eye centre
 
   pupilOffset = createVector(0, 0);
   prevPupilOffset = pupilOffset.copy();
@@ -23,21 +24,24 @@ function setup() {
   prevTargetPos = createVector(0, 0);
 }
 
+// Runs every frame 
 function draw() {
   background(0);
-  t += 0.04;
+  t += 0.04; // Updates time variable 
 
-  let x = width / 2 + 300 * sin(t);
+  let x = width / 2 + 300 * sin(t); // Sinusoidal path 
   let y = height * 0.7;
+  // Side to side movement of target 
   prevTargetPos.set(targetPos);
   targetPos.set(x, y);
 
-  
+  // Fixation trail 
   fixationPoints.push(targetPos.copy());
   if (fixationPoints.length > 10) {
     fixationPoints.shift();
   }
-  
+
+  // Velocity tracking
   let pupilVel = p5.Vector.sub(pupilOffset, prevPupilOffset);
   pupilVelocityProfile.push(pupilVel.mag());
   if (pupilVelocityProfile.length > velocityHistoryLength) {
