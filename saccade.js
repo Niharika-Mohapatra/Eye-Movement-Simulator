@@ -52,7 +52,7 @@ function draw() {
   } else {
     // Fixation
     t++;
-    if (t >= holdDuration) {
+    if (t >= holdDuration) { 
       fixationPoints.push(prevTargetPos.copy());
       if (fixationPoints.length > 10) fixationPoints.shift();
 
@@ -69,7 +69,9 @@ function draw() {
       t = 0;
       saccadeActive = true;
     }
-  }
+    console.log("velocityProfile:", velocityProfile);
+    console.log("mainSequenceData:", mainSequenceData); 
+  } 
 
   // Draw target
   noStroke();
