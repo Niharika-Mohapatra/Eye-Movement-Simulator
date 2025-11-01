@@ -79,4 +79,4 @@ Tech Stack:
 * Javascript
 
 ## Background:
-This project was created to visualize oculomotor behavior as part of a cognitive science project. The models are simplified but grounded in the neurophysiology of eye movement.
+This project was created to visualize oculomotor behaviour as part of a cognitive science project. The models are simplified but grounded in the neurophysiology of eye movement.
