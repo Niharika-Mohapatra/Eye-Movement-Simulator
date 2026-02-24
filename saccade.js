@@ -1,206 +1,164 @@
-// Global variables
-let eyeCentres = [];
-let pupilOffset;
-let targetPos, prevTargetPos;
-let saccadeActive = false;
-let t = 0;
-let saccadeDuration = 0;
-let holdDuration = 60;
-let velocityProfile = [];
+let eye;
 let fixationPoints = [];
-let mainSequenceData = [];
+let velocityProfile = [];
 
-// Sets up the canvas, runs once in the beginning
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  let offset = 60; // Horizontal offset between eyes
-  eyeCentres = [
-    createVector(width / 2 - offset, height / 2), // Left eye centre
-    createVector(width / 2 + offset, height / 2)  // Right eye centre
-  ];
-
-  targetPos = createVector(random(width), random(height)); // Initial target
-  prevTargetPos = targetPos.copy(); // Stores previous position for comparison
-  pupilOffset = createVector(0, 0);
+  eye = new EyeSystem();
 }
 
-// Runs every frame
 function draw() {
   background(0);
 
-  if (saccadeActive) {
-    // Saccade
-    let progress = t / saccadeDuration; // Normalized
-    if (progress >= 1) {
-      // Saccade finished
-      prevTargetPos = targetPos.copy();
-      saccadeActive = false;
-      t = 0;
-    } else {
-      // Animate piupil with minimum jerk
-      let jerkAmt = minJerk(progress);
-      pupilOffset = p5.Vector.sub(targetPos, prevTargetPos).mult(jerkAmt);
+  eye.update();
+  eye.draw();
 
-      // Estimate velocity
-      let deltaProgress = minJerk(progress + 0.01) - jerkAmt;
-      let velocity = p5.Vector.sub(targetPos, prevTargetPos).mult(deltaProgress).mag();
-      velocityProfile.push(velocity);
-      if (velocityProfile.length > 200) velocityProfile.shift();
-
-      t++;
-    }
-  } else {
-    // Fixation
-    t++;
-    if (t >= holdDuration) { 
-      fixationPoints.push(prevTargetPos.copy());
-      if (fixationPoints.length > 10) fixationPoints.shift();
-
-      // Select new target
-      prevTargetPos = targetPos.copy();
-      targetPos = createVector(random(width), random(height));
-
-      // Determine saccade duration 
-      let distance = p5.Vector.dist(prevTargetPos, targetPos);
-      saccadeDuration = floor(2.2 * (distance / 100) + 21); 
-      mainSequenceData.push({ amplitude: distance, duration: saccadeDuration });
-      if (mainSequenceData.length > 100) mainSequenceData.shift();
-
-      t = 0;
-      saccadeActive = true;
-    }
-    console.log("velocityProfile:", velocityProfile);
-    console.log("mainSequenceData:", mainSequenceData); 
-  } 
-
-  // Draw target
-  noStroke();
-  fill(255, 0, 0);
-  ellipse(targetPos.x, targetPos.y, 10, 10);
-
-  // Draw eyes
-  for (let centre of eyeCentres) {
-    drawEye(centre.x, centre.y, p5.Vector.add(centre, pupilOffset));
-  }
-
-  // Past fixation points
-  noStroke();
-  fill(150, 150, 150, 120);
-  for (let pt of fixationPoints) {
-    ellipse(pt.x, pt.y, 8, 8);
-  }
-
-  drawMainSequenceGraph();
   drawVelocityGraph();
 }
 
-// Minimum jerk trajectory
-function minJerk(p) {
-  return 10 * pow(p, 3) - 15 * pow(p, 4) + 6 * pow(p, 5);
+// =============================
+// Eye System Class
+// =============================
+class EyeSystem {
+  constructor() {
+    this.centre = createVector(width / 2, height / 2);
+    this.target = this.randomTarget();
+    this.prevTarget = this.target.copy();
+
+    // Second-order system states
+    this.theta = 0;       // position (0 → 1 normalized)
+    this.omega = 0;       // velocity
+    this.J = 1.0;         // inertia
+    this.B = 6.0;         // damping
+    this.K = 25.0;        // stiffness
+
+    this.torque = 0;
+    this.t = 0;
+    this.pulseDuration = 8;
+    this.holdDuration = 60;
+    this.saccadeActive = false;
+  }
+
+  update() {
+    if (this.saccadeActive) {
+      this.applyPulseStep();
+      this.integrate();
+
+      velocityProfile.push(abs(this.omega));
+      if (velocityProfile.length > 200) velocityProfile.shift();
+
+      this.t++;
+
+      // Stop when close enough
+      if (this.theta >= 0.999) {
+        this.saccadeActive = false;
+        this.theta = 1;
+        this.omega = 0;
+        this.t = 0;
+      }
+    } else {
+      this.t++;
+      if (this.t > this.holdDuration) {
+        fixationPoints.push(this.target.copy());
+        if (fixationPoints.length > 10) fixationPoints.shift();
+
+        this.prevTarget = this.target.copy();
+        this.target = this.randomTarget();
+
+        this.theta = 0;
+        this.omega = 0;
+        this.t = 0;
+        this.saccadeActive = true;
+      }
+    }
+  }
+
+  applyPulseStep() {
+    if (this.t < this.pulseDuration) {
+      this.torque = 60;   // pulse
+    } else {
+      this.torque = 15;   // step
+    }
+  }
+
+  integrate() {
+    let dt = 1.0;
+
+    // α = (T - Bω - Kθ) / J
+    let alpha = (this.torque - this.B * this.omega - this.K * this.theta) / this.J;
+
+    this.omega += alpha * dt;
+    this.theta += this.omega * dt;
+
+    this.theta = constrain(this.theta, 0, 1.2);
+  }
+
+  draw() {
+    let movement = p5.Vector.sub(this.target, this.prevTarget);
+    let gaze = p5.Vector.add(this.prevTarget, movement.mult(this.theta));
+
+    // Draw target
+    noStroke();
+    fill(255, 0, 0);
+    ellipse(this.target.x, this.target.y, 10);
+
+    // Draw fixation points
+    fill(150, 150, 150, 120);
+    for (let pt of fixationPoints) {
+      ellipse(pt.x, pt.y, 8);
+    }
+
+    this.drawEye(this.centre.x, this.centre.y, gaze);
+  }
+
+  drawEye(x, y, gazePos) {
+    let eyeW = 100;
+    let eyeH = 70;
+    let irisR = 40;
+    let pupilR = 20;
+
+    let dx = constrain(gazePos.x - x, -30, 30);
+    let dy = constrain(gazePos.y - y, -20, 20);
+
+    fill(255);
+    stroke(0);
+    strokeWeight(2);
+    ellipse(x, y, eyeW, eyeH);
+
+    fill(100, 60, 30);
+    noStroke();
+    ellipse(x + dx, y + dy, irisR);
+
+    fill(0);
+    ellipse(x + dx, y + dy, pupilR);
+  }
+
+  randomTarget() {
+    return createVector(random(width), random(height));
+  }
 }
 
-function drawEye(x, y, gazePos) {
-  let eyeWidth = 90;
-  let eyeHeight = 60;
-  let irisRadius = 40;
-  let pupilRadius = 20;
-
-  let irisLimitX = (eyeWidth / 2) - (irisRadius / 2);
-  let irisLimitY = (eyeHeight / 2) - (irisRadius / 2);
-
-  // Constrains pupil within eyeball
-  let dx = constrain(gazePos.x - x, -irisLimitX, irisLimitX);
-  let dy = constrain(gazePos.y - y, -irisLimitY, irisLimitY);
-
-  // Eyeballs
-  fill(255);
-  stroke(0);
-  strokeWeight(2);
-  ellipse(x, y, eyeWidth, eyeHeight);
-
-  // Iris
-  fill(100, 60, 30);
-  noStroke();
-  ellipse(x + dx, y + dy, irisRadius, irisRadius);
-
-  // Pupil
-  fill(0);
-  ellipse(x + dx, y + dy, pupilRadius, pupilRadius);
-}
-
-// Plotting pupil velocity
+// =============================
+// Velocity Graph
+// =============================
 function drawVelocityGraph() {
   push();
   translate(20, height - 120);
 
   noFill();
-  stroke(0, 150, 255);
+  stroke(0, 200, 255);
   beginShape();
   for (let i = 0; i < velocityProfile.length; i++) {
-    vertex(i, -velocityProfile[i] * 10);
+    vertex(i, -velocityProfile[i] * 5);
   }
   endShape();
 
   stroke(255);
   line(0, 0, 200, 0);
-  noStroke();
-  fill(255);
-  text("Pupil Velocity", 0, -10);
-
-  pop();
-}
-
-// Plotting duration vs amplitude graph
-function drawMainSequenceGraph() {
-  const N = 50;
-  let graphX = width - 300;
-  let graphY = height - 200;
-  let graphW = 250;
-  let graphH = 150;
-
-  push();
-  translate(graphX, graphY);
-  fill(0);
-  stroke(255);
-  rect(0, 0, graphW, graphH);
-
   fill(255);
   noStroke();
-  textSize(12);
-  text("Amplitude (px)", graphW / 2 - 30, graphH + 20);
-  push();
-  translate(-30, graphH / 2);
-  rotate(-HALF_PI);
-  text("Duration (frames)", 0, 0);
-  pop();
+  text("Angular Velocity", 0, -10);
 
-  stroke(100);
-  textSize(10);
-  for (let x = 0; x <= graphW; x += 50) {
-    line(x, 0, x, graphH);
-    text(x, x - 10, graphH + 12);
-  }
-  for (let y = 0; y <= graphH; y += 30) {
-    line(0, y, graphW, y);
-    text((graphH - y), -25, y + 4);
-  }
-
-  noFill();
-  stroke(0, 255, 0);
-  let maxAmp = 0, maxDur = 0;
-  for (let i = 0; i < mainSequenceData.length; i++) {
-    maxAmp = max(maxAmp, mainSequenceData[i].amplitude);
-    maxDur = max(maxDur, mainSequenceData[i].duration);
-  }
-  maxAmp = max(maxAmp, 100);
-  maxDur = max(maxDur, 10);
-
-  for (let i = max(0, mainSequenceData.length - N); i < mainSequenceData.length; i++) {
-    let { amplitude, duration } = mainSequenceData[i];
-    let px = map(amplitude, 0, maxAmp, 0, graphW);
-    let py = map(duration, 0, maxDur, graphH, 0);
-    ellipse(px, py, 4, 4);
-  }
   pop();
 }
 
