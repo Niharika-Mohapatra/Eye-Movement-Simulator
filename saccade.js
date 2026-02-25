@@ -104,7 +104,7 @@ class EyeSystem {
   }
 
   integrate() {
-    let dt = 1/60;
+    let dt = 1.0;
 
     // α = (T - Bω - Kθ) / J
     let alpha = (this.torque - this.B * this.omega - this.K * this.theta) / this.J;
