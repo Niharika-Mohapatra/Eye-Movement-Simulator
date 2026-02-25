@@ -1,6 +1,7 @@
 let eye;
 let fixationPoints = [];
 let velocityProfile = [];
+let mainSequenceData = [];
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -13,7 +14,7 @@ function draw() {
   eye.update();
   eye.draw();
 
-  drawVelocityGraph();
+  drawMainSequenceGraph();
 }
 
 // =============================
@@ -24,6 +25,8 @@ class EyeSystem {
     this.centre = createVector(width / 2, height / 2);
     this.target = this.randomTarget();
     this.prevTarget = this.target.copy();
+    this.currentPeakVelocity = 0;
+    this.currentAmplitude = 0;
 
     // Second-order system states
     this.theta = 0;       // position (0 → 1 normalized)
@@ -44,6 +47,11 @@ class EyeSystem {
       this.applyPulseStep();
       this.integrate();
 
+      this.currentPeakVelocity = max(
+        this.currentPeakVelocity,
+        abs(this.omega)
+      );
+
       velocityProfile.push(abs(this.omega));
       if (velocityProfile.length > 200) velocityProfile.shift();
 
@@ -54,6 +62,17 @@ class EyeSystem {
         this.saccadeActive = false;
         this.theta = 1;
         this.omega = 0;
+      
+        // Store main sequence point
+        mainSequenceData.push({
+          amplitude: this.currentAmplitude,
+          peakVelocity: this.currentPeakVelocity
+        });
+      
+        if (mainSequenceData.length > 100) {
+          mainSequenceData.shift();
+        }
+      
         this.t = 0;
       }
     } else {
@@ -64,6 +83,9 @@ class EyeSystem {
 
         this.prevTarget = this.target.copy();
         this.target = this.randomTarget();
+
+        this.currentAmplitude = p5.Vector.dist(this.prevTarget, this.target);
+        this.currentPeakVelocity = 0;
 
         this.theta = 0;
         this.omega = 0;
@@ -82,7 +104,7 @@ class EyeSystem {
   }
 
   integrate() {
-    let dt = 1.0;
+    let dt = 1/60;
 
     // α = (T - Bω - Kθ) / J
     let alpha = (this.torque - this.B * this.omega - this.K * this.theta) / this.J;
@@ -141,26 +163,52 @@ class EyeSystem {
 // =============================
 // Velocity Graph
 // =============================
-function drawVelocityGraph() {
-  push();
-  translate(20, height - 120);
+function drawMainSequenceGraph() {
+  let graphX = width - 300;
+  let graphY = height - 200;
+  let graphW = 250;
+  let graphH = 150;
 
-  noFill();
-  stroke(0, 200, 255);
-  beginShape();
-  for (let i = 0; i < velocityProfile.length; i++) {
-    vertex(i, -velocityProfile[i] * 5);
-  }
-  endShape();
+  push();
+  translate(graphX, graphY);
 
   stroke(255);
-  line(0, 0, 200, 0);
-  fill(255);
+  fill(0);
+  rect(0, 0, graphW, graphH);
+
+  // Find scaling
+  let maxAmp = 1;
+  let maxVel = 1;
+
+  for (let d of mainSequenceData) {
+    maxAmp = max(maxAmp, d.amplitude);
+    maxVel = max(maxVel, d.peakVelocity);
+  }
+
+  // Plot points
   noStroke();
-  text("Angular Velocity", 0, -10);
+  fill(0, 255, 0);
+
+  for (let d of mainSequenceData) {
+    let x = map(d.amplitude, 0, maxAmp, 0, graphW);
+    let y = map(d.peakVelocity, 0, maxVel, graphH, 0);
+    ellipse(x, y, 5, 5);
+  }
+
+  // Labels
+  fill(255);
+  textSize(12);
+  text("Amplitude", graphW / 2 - 30, graphH + 20);
+
+  push();
+  translate(-30, graphH / 2);
+  rotate(-HALF_PI);
+  text("Peak Velocity", 0, 0);
+  pop();
 
   pop();
 }
+
 
 
 
