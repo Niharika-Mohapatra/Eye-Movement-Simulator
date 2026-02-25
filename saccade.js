@@ -97,7 +97,8 @@ class EyeSystem {
 
   applyPulseStep() {
     if (this.t < this.pulseDuration) {
-      this.torque = 60;   // pulse
+      let A = this.currentAmplitude;
+      this.torque = 20 + 0.4 * A;   // pulse
     } else {
       this.torque = 15;   // step
     }
