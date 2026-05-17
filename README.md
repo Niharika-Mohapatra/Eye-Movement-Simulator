@@ -16,7 +16,8 @@ Saccades are rapid, ballistic eye movements used to abruptly shift the fovea bet
 
 * **The Physics Engine**: The mechanical plant of the eye is governed by the differential equation:
     $$\alpha = \frac{T - B\omega - K\theta}{J}$$
-    Where:
+
+  Where:
     * $J = 1.0$ (Orbital Inertia)
     * $B = 6.0$ (Viscous Damping/Friction)
     * $K = 25.0$ (Elastic Stiffness of Extraocular Muscles)
