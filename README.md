@@ -5,14 +5,14 @@ An interactive computational neuroscience visualization demonstrating the biomec
 Built natively in JavaScript using the **p5.js** library.
 
 ## View Online
-Experience the live simulation here: [https://niharika-mohapatra.github.io/Eye-Movement-Simulator/](https://niharika-mohapatra.github.io/Eye-Movement-Simulator/)
+View the live simulation here: [https://niharika-mohapatra.github.io/Eye-Movement-Simulator/](https://niharika-mohapatra.github.io/Eye-Movement-Simulator/)
 
 ---
 
 ## Computational Models
 
 ### 1. Saccadic Model (`saccade.js`)
-Saccades are rapid, ballistic eye movements used to abruptly shift the fovea between discrete fixation points. Rather than relying on simple kinematic curve-fitting, this project simulates eye jumps using a biologically grounded **Pulse-Step neural command driving a second-order mechanical system (Mass-Spring-Damper)**.
+Saccades are rapid, ballistic eye movements used to abruptly shift the fovea between discrete fixation points. This project simulates eye jumps using a biologically grounded **Pulse-Step neural command driving a second-order mechanical system (Mass-Spring-Damper)**.
 
 * **The Physics Engine**: The mechanical plant of the eye is governed by the differential equation:
     $$\alpha = \frac{T - B\omega - K\theta}{J}$$
