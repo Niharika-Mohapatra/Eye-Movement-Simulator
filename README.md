@@ -22,16 +22,17 @@ Saccades are rapid, ballistic eye movements used to abruptly shift the fovea bet
     * $B = 6.0$ (Viscous Damping/Friction)
     * $K = 25.0$ (Elastic Stiffness of Extraocular Muscles)
 * **The Pulse-Step Burst**: To initiate a rapid movement, we apply a high-torque "pulse" command ($T = 20 + 0.4 \times \text{Amplitude}$) for a fixed duration ($8\text{ frames}$) to aggressively overcome viscous damping ($B$). Once completed, it drops to a steady "step" torque ($T = 15$) to balance elastic forces ($K$) and maintain the eye's updated fixation position.
-* **The Main Sequence Plot**: The interface renders a live **Main Sequence Scatter Plot (Amplitude vs. Peak Velocity)**. As the simulation runs, it dynamically logs your custom mechanical state metrics, verifying that larger angular displacements mathematically dictate higher peak velocities—accurately capturing vertebrate oculomotor constraints.
+* **The Main Sequence Plot**: The interface renders a live **Main Sequence Scatter Plot (Amplitude vs. Peak Velocity)**. As the simulation runs, it dynamically logs the mechanical state metrics, verifying that larger angular displacements mathematically dictate higher peak velocities. This accurately captures vertebrate oculomotor constraints.
 
 ### 2. Smooth Pursuit Model (`smooth_mvt.js`)
 Smooth pursuit allows the visual system to steadily track a continuously moving object in space. This simulation models the tracking loop using vector kinematics and an error threshold gate.
 
-* **Target Dynamics**: The visual stimulus (red target) moves predictably along a continuous horizontal sinusoidal trajectory ($x = \text{width}/2 + 300 \sin(t)$).
-* **The Control Loop Gating**: The model evaluates tracking conditions using a localized spatial error check. The pupil remains locked until the target vector escapes a specified positional threshold:
+* The visual stimulus (red target) oscillates smoothly:
+  $x = \text{width}/2 + 300 \sin(t)$.
+* The model evaluates tracking conditions using a localized spatial error check. The pupil remains locked until the target vector escapes a specified positional threshold:
     $$\text{distanceToTarget} > \text{deadZoneRadius } (80\text{px})$$
-* **Pursuit Gain**: When tracking activates, the pupil velocity vector scales matching current target deltas via an engineered **Pursuit Gain multiplier of 0.6**. 
-* **What the Graph Reveals**: The continuous time-series line graph displays the Target Velocity profile in **Green** and the matching Pupil Velocity profile in **Blue**. The tracking constraints create a distinct "stepped" velocity profile, demonstrating how biological systems balance sensory processing delays, threshold barriers, and physical tracking efforts.
+* When tracking activates, the pupil velocity vector scales matching current target deltas via **Pursuit Gain multiplier of 0.6**. 
+* The continuous time-series line graph displays the Target Velocity profile in **Green** and the matching Pupil Velocity profile in **Blue**. The tracking constraints create a distinct "stepped" velocity profile, demonstrating how biological systems balance sensory processing delays, threshold barriers, and physical tracking efforts.
 
 ---
 
