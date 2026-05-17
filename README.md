@@ -24,6 +24,8 @@ Saccades are rapid, ballistic eye movements used to abruptly shift the fovea bet
 * **The Pulse-Step Burst**: To initiate a rapid movement, we apply a high-torque "pulse" command ($T = 20 + 0.4 \times \text{Amplitude}$) for a fixed duration ($8\text{ frames}$) to aggressively overcome viscous damping ($B$). Once completed, it drops to a steady "step" torque ($T = 15$) to balance elastic forces ($K$) and maintain the eye's updated fixation position.
 * **The Main Sequence Plot**: The interface renders a live **Main Sequence Scatter Plot (Amplitude vs. Peak Velocity)**. As the simulation runs, it dynamically logs the mechanical state metrics, verifying that larger angular displacements mathematically dictate higher peak velocities. This accurately captures vertebrate oculomotor constraints.
 
+![Alt_Text](Duration_vs_Amplitude.png)
+
 ### 2. Smooth Pursuit Model (`smooth_mvt.js`)
 Smooth pursuit allows the visual system to steadily track a continuously moving object in space. This simulation models the tracking loop using vector kinematics and an error threshold gate.
 
@@ -34,14 +36,7 @@ Smooth pursuit allows the visual system to steadily track a continuously moving 
 * When tracking activates, the pupil velocity vector scales matching current target deltas via **Pursuit Gain multiplier of 0.6**. 
 * The continuous time-series line graph displays the Target Velocity profile in **Green** and the matching Pupil Velocity profile in **Blue**. The tracking constraints create a distinct "stepped" velocity profile, demonstrating how biological systems balance sensory processing delays, threshold barriers, and physical tracking efforts.
 
----
-
-## Features
-* **Dual Oculomotor Simulations**: Separate specialized execution environments for ballistic pulse-step jumps and velocity-driven pursuit tracking.
-* **Real-time Computational Graphing**:
-    * Live scatter plot compilation for Saccadic Main Sequence profiles.
-    * Live dual-trace oscilloscope timeline evaluating tracking lags and velocity gains.
-* **Vector Mechanics**: State integration implemented through forward Euler methods directly mapping torque profiles onto orbital mass configurations.
+![Alt_Text](Target_vs_Pupil_trajectories.png)
 
 ---
 
