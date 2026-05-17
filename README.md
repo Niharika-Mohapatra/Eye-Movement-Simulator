@@ -1,82 +1,54 @@
-# Eye Movement Simulation
+# Oculomotor Dynamics: Eye Movement Simulation
 
-This visualization demonstrates two major types of human eye movements:
+An interactive computational neuroscience visualization demonstrating the biomechanical and control loop differences between the two primary classes of human eye movements: **Saccades** and **Smooth Pursuit**. 
 
-* **Smooth Pursuit**: where the eyes smoothly track a moving target.
+Built natively in JavaScript using the **p5.js** library.
 
-* **Saccades**: rapid, jerky movements the eye makes to shift focus between points.
+## View Online
+Experience the live simulation here: [https://niharika-mohapatra.github.io/Eye-Movement-Simulator/](https://niharika-mohapatra.github.io/Eye-Movement-Simulator/)
 
-Built with p5.js. 
+---
 
-## View Online:
-You can view the simulation here:
-https://niharika-mohapatra.github.io/Eye-Movement-Simulator/
+## Computational Models
 
-## Why do eye movements matter?
-Our eyes are constantly moving even when we think we're staring at something still. These movements are crucial for gathering visual information and for how we perceive the world.
+### 1. Saccadic Model (`saccade.js`)
+Saccades are rapid, ballistic eye movements used to abruptly shift the fovea between discrete fixation points. Rather than relying on simple kinematic curve-fitting, this project simulates eye jumps using a biologically grounded **Pulse-Step neural command driving a second-order mechanical system (Mass-Spring-Damper)**.
 
-Saccades are rapid, ballistic jumps the eye makes when shifting focus from one object to another. Fixations occur when the eye focuses on a target where visual information is actually gathered. These two movements help the eye gather integrated visual information needed for scanning an environment or reading. This is the most common form of eye movement for humans
+* **The Physics Engine**: The mechanical plant of the eye is governed by the differential equation:
+    $$\alpha = \frac{T - B\omega - K\theta}{J}$$
+    Where:
+    * $J = 1.0$ (Orbital Inertia)
+    * $B = 6.0$ (Viscous Damping/Friction)
+    * $K = 25.0$ (Elastic Stiffness of Extraocular Muscles)
+* **The Pulse-Step Burst**: To initiate a rapid movement, the script applies a high-torque "pulse" command ($T = 20 + 0.4 \times \text{Amplitude}$) for a fixed duration ($8\text{ frames}$) to aggressively overcome viscous damping ($B$). Once completed, it drops to a steady "step" torque ($T = 15$) to balance elastic forces ($K$) and maintain the eye's updated fixation position.
+* **The Main Sequence Plot**: The interface renders a live **Main Sequence Scatter Plot (Amplitude vs. Peak Velocity)**. As the simulation runs, it dynamically logs your custom mechanical state metrics, verifying that larger angular displacements mathematically dictate higher peak velocities—accurately capturing vertebrate oculomotor constraints.
 
-In contrast, we have smooth pursuit in which the eye moves smoothly and uniformly. This is used to track moving objects (in fact smooth pursuit cannot be performed without a moving target).
+### 2. Smooth Pursuit Model (`smooth_mvt.js`)
+Smooth pursuit allows the visual system to steadily track a continuously moving object in space. This simulation models the tracking loop using vector kinematics and an error threshold gate.
 
-Understanding these movements helps in fields like vision science, cognitive neuroscience, and clinical diagnosis (e.g., tracking disorders, concussions, or neurological diseases).
+* **Target Dynamics**: The visual stimulus (red target) moves predictably along a continuous horizontal sinusoidal trajectory ($x = \text{width}/2 + 300 \sin(t)$).
+* **The Control Loop Gating**: The model evaluates tracking conditions using a localized spatial error check. The pupil remains locked until the target vector escapes a specified positional threshold:
+    $$\text{distanceToTarget} > \text{deadZoneRadius } (80\text{px})$$
+* **Pursuit Gain**: When tracking activates, the pupil velocity vector scales matching current target deltas via an engineered **Pursuit Gain multiplier of 0.6**. 
+* **What the Graph Reveals**: The continuous time-series line graph displays the Target Velocity profile in **Green** and the matching Pupil Velocity profile in **Blue**. The tracking constraints create a distinct "stepped" velocity profile, demonstrating how biological systems balance sensory processing delays, threshold barriers, and physical tracking efforts.
 
-## How does this project simulate real eye movements?
+---
 
-### Saccadic model:
+## Features
+* **Dual Oculomotor Simulations**: Separate specialized execution environments for ballistic pulse-step jumps and velocity-driven pursuit tracking.
+* **Real-time Computational Graphing**:
+    * Live scatter plot compilation for Saccadic Main Sequence profiles.
+    * Live dual-trace oscilloscope timeline evaluating tracking lags and velocity gains.
+* **Vector Mechanics**: State integration implemented through forward Euler methods directly mapping torque profiles onto orbital mass configurations.
 
-This simulation models rapid eye jumps (saccades) as the eyes shift focus from one point to another.
+---
 
-The red dot represents a shifting point of interest, jumping randomly after short fixations, which are represented by grey dots on the screen.
+## Tech Stack
+* **Engine**: p5.js (HTML5 Canvas rendering context)
+* **Language**: JavaScript (ES6+ Architecture)
+* **Hosting**: GitHub Pages
 
-The pupils move toward the target using a biologically inspired minimum jerk profile—smooth acceleration and deceleration mimicking natural saccadic motion.
+---
 
-### What does the graph reveal?
-Green Line (Pupil Velocity):
-Sharp, burst-like peaks that represent the rapid flicks of saccadic eye movement. Each spike reflects a saccade—quick, ballistic movements with high peak velocity and a fixed duration-amplitude relationship.
-
-Longer jumps require faster, longer saccades. Shorter jumps produce quicker, briefer flicks. 
-
-Unlike smooth pursuit, the eyes do not track continuous motion. They jump between fixations, emphasizing speed and efficiency over continuous accuracy.
-
-![Velocity Profile of Pupil](images/Saccade_pupil_velocity.png)
-
-![Duration vs Amplitude](images/Saccade_duration_amplitude.png)
-
-### Smooth Pursuit model:
-This simulation models basic eye behavior using vector math and physics-inspired logic. 
-
-The red dot moves with a smooth, sine-wave trajectory.
-
-### What does the graph reveal?
-
-These approximations allow users to intuitively understand how our visual system balances precision, delay, and effort when tracking moving objects.
-
-* Green Line (Target Velocity): A continuous sine wave, representing the consistent motion of the stimulus.
-
-* Blue Line (Pupil Velocity): Step-like changes in velocity that occur only when the system deems pursuit necessary.
-
-This stepped profile captures the all-or-nothing nature of biological smooth pursuit. The eyes don’t constantly follow, they wait until the target moves too far or fast, then quickly catch up. 
-
-![Velocity Profiles of Target and Pupil (green and blue respectively](images/Smooth_pursuit_velocity_profile.png)
-
-## Features:
-Visual simulation of eye tracking behavior.
-
-Custom-coded models for:
-
-* Smooth pursuit using velocity-based motion and pursuit gain.
-* Saccades using biologically inspired velocity profiles (minimum jerk).
-
-Visual graphs:
-
-* Velocity over time
-* Amplitude vs. duration of saccades. 
-
-Tech Stack:
-* p5.js
-* HTML5 Canvas
-* Javascript
-
-## Background:
-This project was created to visualize oculomotor behaviour as part of a cognitive science project. The models are simplified but grounded in the neurophysiology of eye movement.
+## Background & Significance
+This simulator was developed to bridge the gap between abstract mathematical tracking models and real neurophysiological control structures. By modulating physical traits like damping coefficients or feedback gains, the project serves as an introductory tool for vision science, cognitive neuroscience modeling, and understanding clinical oculomotor pathologies (such as tracking degradation in neurodegenerative conditions or concussions).
