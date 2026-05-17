@@ -21,7 +21,7 @@ Saccades are rapid, ballistic eye movements used to abruptly shift the fovea bet
     * $J = 1.0$ (Orbital Inertia)
     * $B = 6.0$ (Viscous Damping/Friction)
     * $K = 25.0$ (Elastic Stiffness of Extraocular Muscles)
-* **The Pulse-Step Burst**: To initiate a rapid movement, the script applies a high-torque "pulse" command ($T = 20 + 0.4 \times \text{Amplitude}$) for a fixed duration ($8\text{ frames}$) to aggressively overcome viscous damping ($B$). Once completed, it drops to a steady "step" torque ($T = 15$) to balance elastic forces ($K$) and maintain the eye's updated fixation position.
+* **The Pulse-Step Burst**: To initiate a rapid movement, we apply a high-torque "pulse" command ($T = 20 + 0.4 \times \text{Amplitude}$) for a fixed duration ($8\text{ frames}$) to aggressively overcome viscous damping ($B$). Once completed, it drops to a steady "step" torque ($T = 15$) to balance elastic forces ($K$) and maintain the eye's updated fixation position.
 * **The Main Sequence Plot**: The interface renders a live **Main Sequence Scatter Plot (Amplitude vs. Peak Velocity)**. As the simulation runs, it dynamically logs your custom mechanical state metrics, verifying that larger angular displacements mathematically dictate higher peak velocities—accurately capturing vertebrate oculomotor constraints.
 
 ### 2. Smooth Pursuit Model (`smooth_mvt.js`)
